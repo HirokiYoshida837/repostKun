@@ -1,15 +1,25 @@
 module.exports = {
-  env: {
-    browser: true,
-    es2021: true
+  "env": {
+    "browser": true,
+    "es2021": true
   },
-  extends: 'standard-with-typescript',
-  overrides: [
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "prettier"
   ],
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module'
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "sourceType": "module"
   },
-  rules: {
+  "plugins": [
+    "@typescript-eslint",
+  ],
+  "rules": {
+    "@typescript-eslint/no-explicit-any": 0,
+    "@typescript-eslint/no-unused-vars": [
+      1, { "argsIgnorePattern": "^_" }
+    ]
   }
 }
