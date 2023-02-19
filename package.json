@@ -2,6 +2,7 @@
   "name": "repostkun",
   "version": "1.0.0",
   "description": "",
+  "type": "module",
   "main": "src/main.js",
   "scripts": {
     "clean": "del-cli dist",
@@ -15,7 +16,7 @@
     "lint": "eslint \"src/**/*.{js,ts,tsx}\"",
     "format": "eslint --fix \"src/**/*.{js,ts,tsx}\"",
     "dev": "ts-node --transpile-only src/main.ts",
-    "dev:tsx": "tsx watch src/main.ts | npx pino-pretty"
+    "dev:tsx": "tsx watch src/main.ts"
   },
   "repository": {
     "type": "git",
@@ -28,9 +29,13 @@
   },
   "homepage": "https://github.com/HirokiYoshida837/repostKun#readme",
   "dependencies": {
+    "@yuudachi/framework": "^0.2.9",
     "discord.js": "^14.7.1",
     "dotenv": "^16.0.3",
-    "pino": "^8.10.0"
+    "pino": "^8.10.0",
+    "readdirp": "^3.6.0",
+    "reflect-metadata": "^0.1.13",
+    "tsyringe": "^4.7.0"
   },
   "devDependencies": {
     "@types/pino": "^7.0.5",
