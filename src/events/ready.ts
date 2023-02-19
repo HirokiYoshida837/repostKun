@@ -1,0 +1,35 @@
+import type { Event } from '@yuudachi/framework/types'
+import { Client, Events } from 'discord.js'
+import { logger } from '@yuudachi/framework'
+import { injectable } from 'tsyringe'
+
+@injectable()
+export default class implements Event {
+  name = 'Ready'
+
+  event = Events.ClientReady as const
+
+  public constructor (public readonly client: Client<true>) {
+  }
+
+  public async execute () {
+
+    logger.info("hi!")
+
+    logger.info(this.client.toJSON())
+
+    // for await (const _ of (this.client, this.event)) {
+    //
+    //   logger.info({
+    //     msg: `Client Ready`,
+    //     // user: `${this.client.user.tag}`,
+    //     id: `${this.client.user.id}`,
+    //     guilds: `${this.client.guilds.cache.size}`,
+    //     approximateMembers: this.client.guilds.cache.reduce((total, current) => total + current.memberCount, 0)
+    //   })
+    //
+    // }
+
+  }
+
+}
