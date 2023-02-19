@@ -2,7 +2,7 @@
   "name": "repostkun",
   "version": "1.0.0",
   "description": "",
-  "main": "src/index.js",
+  "main": "src/main.js",
   "scripts": {
     "clean": "del-cli dist",
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -15,7 +15,7 @@
     "lint": "eslint \"src/**/*.{js,ts,tsx}\"",
     "format": "eslint --fix \"src/**/*.{js,ts,tsx}\"",
     "dev": "ts-node --transpile-only src/main.ts",
-    "dev:tsx": "tsx watch src/main.ts"
+    "dev:tsx": "tsx watch src/main.ts | npx pino-pretty"
   },
   "repository": {
     "type": "git",
@@ -29,9 +29,11 @@
   "homepage": "https://github.com/HirokiYoshida837/repostKun#readme",
   "dependencies": {
     "discord.js": "^14.7.1",
-    "dotenv": "^16.0.3"
+    "dotenv": "^16.0.3",
+    "pino": "^8.10.0"
   },
   "devDependencies": {
+    "@types/pino": "^7.0.5",
     "@typescript-eslint/eslint-plugin": "^5.52.0",
     "@typescript-eslint/parser": "^5.30.7",
     "del-cli": "^5.0.0",
@@ -43,6 +45,7 @@
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-n": "^15.6.1",
     "eslint-plugin-promise": "^6.1.1",
+    "pino-pretty": "^9.3.0",
     "prettier": "^2.7.1",
     "ts-node": "^10.9.1",
     "tsx": "^3.12.3",

@@ -1,12 +1,19 @@
 import {
   CacheType,
   ChannelType,
-  Client,
+  Client, Collection, CommandInteraction, Events,
   GatewayIntentBits, Interaction, Message,
 } from 'discord.js'
 
 import * as dotenv from 'dotenv'
 import { checkContentContainsTargetWord } from './core/ContentCheck'
+
+import pino from 'pino'
+import { CommandBase } from './structures/CommandBase'
+import { ping2Command } from './commands/Ping2'
+import { greedyCommand } from './commands/Greedy'
+
+const logger = pino({ level: process.env.LOG_LEVEL || 'info' })
 
 // loading .env
 dotenv.config()
@@ -17,20 +24,22 @@ const client = new Client({
     GatewayIntentBits.GuildMessages,
     GatewayIntentBits.MessageContent,
   ]
-})
+}).setMaxListeners(20)
 
 const guildChannelMap = new Map<string, string>()
 
+
+// const commands = new Map<string, CommandBase>()
 
 
 // ログイン成功後に動く
 client.on('ready', async () => {
 
-  console.log(`Logged in as ${client.user?.tag}, Logged in to  ${client.guilds.cache.size} guilds.`)
+  logger.info(`Logged in as ${client.user?.tag}, Logged in to  ${client.guilds.cache.size} guilds.`)
 
-  console.log(`start initialize process.`)
+  logger.info(`start initialize process.`)
 
-  console.log(`searching repost target channels...`)
+  logger.info(`searching repost target channels...`)
 
   client.guilds.cache
     .filter(x => x != undefined)
@@ -49,19 +58,25 @@ client.on('ready', async () => {
 
     })
 
-  console.log(`search repost target channels complete.`)
-  console.log(`discord repostkun is ready!`)
-
+  logger.info(`search repost target channels complete.`)
+  logger.info(`discord repostkun is ready!`)
 })
 
+// loading commands.
+
 // mentionで動く
-client.on('interactionCreate', async (interaction: Interaction<CacheType>) => {
+client.on(Events.InteractionCreate, async (interaction: Interaction) => {
 
   if (!interaction.isChatInputCommand()) return
 
-  if (interaction.commandName === 'ping') {
-    await interaction.reply('Pong!')
-  }
+  const commandName = interaction.commandName
+  logger.info(commandName)
+
+  // const command = commands.get(commandName)
+  //
+  // if (command) {
+  //   await command.execute(interaction)
+  // }
 })
 
 // 新着メッセージを見たときに動く
@@ -70,7 +85,7 @@ client.on('messageCreate', async (message: Message) => {
   if (message.author.bot) return
 
   if (!message.guildId || !message.guild) {
-    console.warn(`not found guildId`)
+    logger.warn(`not found guildId`)
     return
   }
 
@@ -84,7 +99,7 @@ client.on('messageCreate', async (message: Message) => {
     const targetChId = guildChannelMap.get(message.guildId)
 
     if (!targetChId) {
-      console.warn(`Cannot found targetChId on guild : ${message.guild}`)
+      logger.warn(`Cannot found targetChId on guild : ${message.guild}`)
       return
     }
 
@@ -92,34 +107,42 @@ client.on('messageCreate', async (message: Message) => {
 
     if (targetCh?.isTextBased()) {
 
-      console.log(`starting repost process.`)
+      logger.info(`starting repost process.`)
 
       try {
 
         // 元投稿のembedsは邪魔なので消す
         const edit = await message.suppressEmbeds(true)
-        console.info(`remove embeds from original post.  ${edit.guildId}, ${edit.channelId}, ${edit.id}, ${edit.editedAt?.toDateString()}`)
+        logger.info(`remove embeds from original post.  ${edit.guildId}, ${edit.channelId}, ${edit.id}, ${edit.editedAt?.toDateString()}`)
 
         // repost先にrepost
         const repost = await targetCh.send(`${message.content} [repost from ${message.author.username}'s post]`)
-        console.info(`repost to targetCh. ${repost.channelId}, ${repost.id}`)
+        logger.info(`repost to targetCh. ${repost.channelId}, ${repost.id}`)
 
         // 投稿にreactionつけておく
         const reaction = await message.react(`📫`)
-        console.info(`react to original post. ${reaction.toJSON()}`)
+        logger.info(`react to original post. ${reaction.toJSON()}`)
 
       } catch (e) {
-        console.error(e)
+        logger.error(e)
         // エラー出てもbot動かし続けるので握る
         return
       }
 
-      console.log(`repost process. complete.`)
+      logger.info(`repost process. complete.`)
 
     }
   }
 })
 
-// HACK : DISCORD_TOKEN でenvに入れていれば引数に入れなくても良い。
-console.log('discord repostkun bot starting.')
-client.login()
+try {
+  logger.info('discord repostkun bot starting.')
+
+  // HACK : DISCORD_TOKEN でenvに入れていれば引数に入れなくても良い。
+  client.login()
+
+} catch (error_) {
+  const error = error_ as Error
+  logger.error(error, error.message)
+}
+
