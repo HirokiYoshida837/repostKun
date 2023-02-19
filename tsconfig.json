@@ -4,6 +4,8 @@
     "module": "CommonJS",
     "declaration": true,
     "strict": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
     "lib": [
       "ES2020",
       "dom"
