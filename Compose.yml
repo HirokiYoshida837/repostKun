@@ -1,0 +1,6 @@
+services:
+  webapp:
+    build: .
+    env_file:
+      - .env
+    init: true
