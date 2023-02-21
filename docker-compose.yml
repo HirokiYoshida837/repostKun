@@ -4,3 +4,5 @@ services:
     env_file:
       - .env
     init: true
+    logging:
+      driver: gcplogs
