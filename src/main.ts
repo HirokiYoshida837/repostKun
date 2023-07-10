@@ -8,6 +8,7 @@ import {
 import * as dotenv from 'dotenv'
 import { checkContentContainsTargetWord } from './core/ContentCheck'
 import pino from 'pino'
+import { getPingSquare } from './core/mention/constants'
 
 const logger = pino({ level: process.env.LOG_LEVEL || 'info' })
 
@@ -79,6 +80,32 @@ client.on('messageCreate', async (message: Message) => {
     // 同じチャンネルの場合は無視
     return
   }
+
+  // repostKun宛のmention?
+  if(client.user?.id && message.mentions.members?.get(client.user.id)){
+
+    const replaced = message.cleanContent.replace(new RegExp(`^@${client.user.username}`), '').trimStart()
+
+    logger.info(replaced)
+
+    if (replaced.startsWith("すいません")) {
+      await message.reply("コラーーーーーーー❗❗❗❗❗❗❗❗")
+      return
+    }else if (replaced.startsWith("pingu")) {
+
+      const mes = getPingSquare().reduce((a,b) => a+"\n"+b)
+      await message.reply(mes)
+
+      return
+
+    } else{
+      // not implemented
+      await message.reply("広い視野を持とう❗")
+      return
+    }
+  }
+
+
 
   if (checkContentContainsTargetWord(message.content)) {
 
